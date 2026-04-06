@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - Student Management System{% endblock %}
+
+{% block body %}
+<div class="text-center mb-5">
+    <h1 class="display-4">
+        <i class="bi bi-mortarboard-fill text-primary"></i>
+        Welcome to Student Management System
+    </h1>
+    <p class="lead text-muted">
+        Manage students, departments, courses, and enrollments all in one place
+    </p>
+</div>
+
+<div class="row g-4">
+    {# Students Card #}
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm h-100 border-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Students</h5>
+                <p class="card-text text-muted">View and manage all students</p>
+                <a href="{{ path('app_student_index') }}" class="btn btn-primary w-100">
+                    <i class="bi bi-arrow-right-circle"></i> View Students
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Departments Card #}
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm h-100 border-success">
+            <div class="card-body text-center">
+                <i class="bi bi-building text-success" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Departments</h5>
+                <p class="card-text text-muted">Browse academic departments</p>
+                <a href="{{ path('department_index') }}" class="btn btn-success w-100">
+                    <i class="bi bi-arrow-right-circle"></i> View Departments
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Courses Card #}
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm h-100 border-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-book text-warning" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Courses</h5>
+                <p class="card-text text-muted">Explore available courses</p>
+                <a href="{{ path('course_index') }}" class="btn btn-warning w-100">
+                    <i class="bi bi-arrow-right-circle"></i> View Courses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Enrollments Card #}
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm h-100 border-info">
+            <div class="card-body text-center">
+                <i class="bi bi-journal-check text-info" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Enrollments</h5>
+                <p class="card-text text-muted">Manage course enrollments</p>
+                <a href="{{ path('enrollment_index') }}" class="btn btn-info w-100">
+                    <i class="bi bi-arrow-right-circle"></i> View Enrollments
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Quick Stats Section #}
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Quick Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h3 class="text-primary">150</h3>
+                        <p class="text-muted">Total Students</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-success">12</h3>
+                        <p class="text-muted">Departments</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-warning">45</h3>
+                        <p class="text-muted">Courses</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-info">320</h3>
+                        <p class="text-muted">Enrollments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {{ student.firstName }} {{ student.lastName }} - Student Management System{% endblock %}
+
+{% block body %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ path('home') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ path('student_index') }}">Students</a></li>
+        <li class="breadcrumb-item"><a href="{{ path('student_show', {id: student.id}) }}">{{ student.firstName }} {{ student.lastName }}</a></li>
+        <li class="breadcrumb-item active">Edit</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil"></i> Edit Student
+                </h4>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.firstName, 'First Name', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.firstName) }}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.lastName, 'Last Name', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.lastName) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.email, 'Email Address', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.dateOfBirth, 'Date of Birth', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateOfBirth, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.dateOfBirth) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.department, 'Department', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.department, {'attr': {'class': 'form-select'}}) }}
+                    {{ form_errors(form.department) }}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="{{ path('student_show', {id: student.id}) }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-check-circle"></i> Update Student
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
