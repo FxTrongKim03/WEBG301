@@ -2,58 +2,124 @@
 
 namespace App\Controller;
 
+use App\Entity\Student;
+use App\Form\StudentType;
 use App\Repository\StudentRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/student')]
 class StudentController extends AbstractController
 {
-    #[Route('/students', name: 'app_student_index')]
-    public function index(StudentRepository $studentRepository, Request $request): Response
+    /**
+     * List all students
+     */
+    #[Route('s', name: 'student_index', methods: ['GET'])]
+    public function index(StudentRepository $studentRepository): Response
     {
-        $searchTerm = $request->query->get('q', '');
-
-        $students = ($searchTerm !== '')
-            ? $studentRepository->findByName($searchTerm)
-            : $studentRepository->findAll();
+        $students = $studentRepository->findAll();
 
         return $this->render('student/index.html.twig', [
-            'page_title'  => 'Student List',
-            'students'    => $students,
-            'search_term' => $searchTerm,
-        ]);
-    }
-    
-    #[Route('/students_new', name: 'app_student_new')]
-    public function new(): Response
-    {
-        return  $this->render('student/new.html.twig', [
-            'page_title' => 'Add New Student',
+            'students' => $students,
         ]);
     }
 
-    #[Route('/students/{id}', name: 'app_student_show')]
-    public function show(StudentRepository $studentRepository, int $id): Response
+    /**
+     * Create a new student
+     */
+    #[Route('/new', name: 'student_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $student = $studentRepository->find($id);  
+        $student = new Student();
+        $form = $this->createForm(StudentType::class, $student);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Persist the student to the database
+            $entityManager->persist($student);
+            $entityManager->flush();
+
+            // Add success flash message
+            $this->addFlash('success', sprintf(
+                'Student "%s %s" has been created successfully!',
+                $student->getFirstName(),
+                $student->getLastName()
+            ));
+
+            // Redirect to the student's detail page
+            return $this->redirectToRoute('student_show', ['id' => $student->getId()]);
+        }
+
+        return $this->render('student/new.html.twig', [
+            'student' => $student,
+            'form' => $form,
+        ]);
+    }
+
+    /**
+     * Show a single student's details
+     */
+    #[Route('/{id}', name: 'student_show', methods: ['GET'])]
+    public function show(Student $student): Response
+    {
         return $this->render('student/show.html.twig', [
-            'page_title' => 'Student Details',
-            'student'    => $student,
+            'student' => $student,
         ]);
     }
 
-    #[Route('/students/{id}/edit', name: 'app_student_edit')]
-    public function edit(StudentRepository $studentRepository, int $id): Response
+    /**
+     * Edit an existing student
+     */
+    #[Route('/{id}/edit', name: 'student_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Student $student, EntityManagerInterface $entityManager): Response
     {
-        $student = $studentRepository->find($id);
+        $form = $this->createForm(StudentType::class, $student);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // No need to persist - student is already managed
+            $entityManager->flush();
+
+            $this->addFlash('success', sprintf(
+                'Student "%s %s" has been updated successfully!',
+                $student->getFirstName(),
+                $student->getLastName()
+            ));
+
+            return $this->redirectToRoute('student_show', ['id' => $student->getId()]);
+        }
 
         return $this->render('student/edit.html.twig', [
-            'page_title' => 'Edit Student',
-            'student'    => $student,
+            'student' => $student,
+            'form' => $form,
         ]);
     }
 
+    /**
+     * Delete a student
+     */
+    #[Route('/{id}', name: 'student_delete', methods: ['POST'])]
+    public function delete(Request $request, Student $student, EntityManagerInterface $entityManager): Response
+    {
+        // CSRF token validation
+        if ($this->isCsrfTokenValid('delete'.$student->getId(), $request->request->get('_token'))) {
+            $studentName = $student->getFirstName() . ' ' . $student->getLastName();
+            
+            // Remove the student (enrollments will be cascade deleted)
+            $entityManager->remove($student);
+            $entityManager->flush();
+
+            $this->addFlash('success', sprintf(
+                'Student "%s" has been deleted successfully.',
+                $studentName
+            ));
+        } else {
+            $this->addFlash('error', 'Invalid CSRF token. Delete operation failed.');
+        }
+
+        return $this->redirectToRoute('student_index');
+    }
 }

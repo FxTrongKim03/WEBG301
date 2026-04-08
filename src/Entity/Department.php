@@ -6,8 +6,12 @@ use App\Repository\DepartmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: DepartmentRepository::class)]
+#[UniqueEntity(fields: ['code'], message: 'This department code is already in use')]
+
 class Department
 {
     #[ORM\Id]
@@ -16,13 +20,15 @@ class Department
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 100)]
     private ?string $name = null;
 
     #[ORM\Column(length: 10, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 10)]
+    #[Assert\Regex(pattern: '/^[A-Z0-9]+$/', message: 'Code must contain only uppercase letters and numbers')]
     private ?string $code = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = null;
 
     // Inverse side of the relationships (populated by Doctrine)
     #[ORM\OneToMany(targetEntity: Student::class, mappedBy: 'department')]

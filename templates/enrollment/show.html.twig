@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enrollment Details - Student Management System{% endblock %}
+
+{% block body %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ path('home') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ path('enrollment_index') }}">Enrollments</a></li>
+        <li class="breadcrumb-item active">Enrollment #{{ enrollment.id }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-journal-check"></i> Enrollment Details</h1>
+    <div>
+        <a href="{{ path('enrollment_edit', {id: enrollment.id}) }}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            <i class="bi bi-trash"></i> Delete
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Student Information</h5>
+            </div>
+            <div class="card-body">
+                <h6>
+                    <a href="{{ path('student_show', {id: enrollment.student.id}) }}">
+                        {{ enrollment.student.firstName }} {{ enrollment.student.lastName }}
+                    </a>
+                </h6>
+                <p class="text-muted mb-1">
+                    <i class="bi bi-envelope"></i> {{ enrollment.student.email }}
+                </p>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-building"></i> 
+                    {% if enrollment.student.department %}
+                        {{ enrollment.student.department.name }}
+                    {% else %}
+                        No department
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">Course Information</h5>
+            </div>
+            <div class="card-body">
+                <h6>
+                    <a href="{{ path('course_show', {id: enrollment.course.id}) }}">
+                        {{ enrollment.course.name }}
+                    </a>
+                    <span class="badge bg-info">{{ enrollment.course.code }}</span>
+                </h6>
+                <p class="text-muted mb-1">
+                    <strong>Credits:</strong> {{ enrollment.course.credits }}
+                </p>
+                <p class="text-muted mb-0">
+                    <strong>Department:</strong> {{ enrollment.course.department.name }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">Enrollment Status</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-borderless">
+            <tr>
+                <td style="width: 30%;"><strong>Enrollment ID:</strong></td>
+                <td><span class="badge bg-secondary">{{ enrollment.id }}</span></td>
+            </tr>
+            <tr>
+                <td><strong>Status:</strong></td>
+                <td>
+                    {% if enrollment.status == 'active' %}
+                        <span class="badge bg-primary">Active</span>
+                    {% elseif enrollment.status == 'completed' %}
+                        <span class="badge bg-success">Completed</span>
+                    {% elseif enrollment.status == 'dropped' %}
+                        <span class="badge bg-danger">Dropped</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ enrollment.status|title }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Grade:</strong></td>
+                <td>
+                    {% if enrollment.grade %}
+                        <span class="badge bg-info">{{ enrollment.grade|number_format(2) }}</span>
+                    {% else %}
+                        <span class="text-muted">Not yet graded</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Enrolled On:</strong></td>
+                <td>{{ enrollment.enrolledAt|date('F j, Y \a\t g:i A') }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+{# Delete Confirmation Modal #}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this enrollment?</p>
+                <p class="text-danger">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{{ path('enrollment_delete', {id: enrollment.id}) }}" style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ enrollment.id) }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Enrollment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
