@@ -34,6 +34,12 @@ class Student
     #[Assert\Email(message: 'Please provide a valid email address')]
     private ?string $email = null;
 
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $dateOfBirth = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $createdAt = null;
+
     // Owning side of Department → Student relationship
     #[ORM\ManyToOne(targetEntity: Department::class, inversedBy: 'students')]
     #[ORM\JoinColumn(nullable: false)]

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\EnrollmentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnrollmentRepository::class)]
 class Enrollment
@@ -29,6 +30,7 @@ class Enrollment
     private ?\DateTimeInterface $enrolledAt = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
+    #[Assert\Range(min: 0, max: 100, notInRangeMessage: 'Grade must be between {{ min }} and {{ max }}')]
     private ?float $grade = null;
 
     #[ORM\Column(length: 20, options: ['default' => 'active'])]

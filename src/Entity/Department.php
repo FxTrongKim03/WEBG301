@@ -30,6 +30,9 @@ class Department
     #[Assert\Regex(pattern: '/^[A-Z0-9]+$/', message: 'Code must contain only uppercase letters and numbers')]
     private ?string $code = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $description = null;
+
     // Inverse side of the relationships (populated by Doctrine)
     #[ORM\OneToMany(targetEntity: Student::class, mappedBy: 'department')]
     private Collection $students;

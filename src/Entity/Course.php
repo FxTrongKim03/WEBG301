@@ -6,6 +6,8 @@ use App\Repository\CourseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
 class Course
@@ -16,15 +18,21 @@ class Course
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
+    #[Assert\NotBlank(message: 'Course name is required')]
+    #[Assert\Length(min: 3, max: 150)]
     private ?string $name = null;
 
     #[ORM\Column(length: 20, unique: true)]
+    #[Assert\NotBlank(message: 'Course code is required')]
+    #[Assert\Regex(pattern: '/^[A-Z0-9]+$/', message: 'Code must contain only uppercase letters and numbers')]
     private ?string $code = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: 'integer', options: ['default' => 3])]
+    #[Assert\NotBlank(message: 'Credits are required')]
+    #[Assert\Range(min: 1, max: 10, message: 'Credits must be a number between 1 and 10')]
     private int $credits = 3;
 
     #[ORM\ManyToOne(targetEntity: Department::class, inversedBy: 'courses')]
