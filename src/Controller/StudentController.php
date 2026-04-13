@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Student;
 use App\Form\StudentType;
+use App\Entity\Enrollment;
+use App\Form\EnrollmentType;
 use App\Repository\StudentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,8 +67,14 @@ class StudentController extends AbstractController
     #[Route('/{id}', name: 'student_show', methods: ['GET'])]
     public function show(Student $student): Response
     {
+        // Prepare an enrollment form pre-filled with this student for the slide-over
+        $enrollment = new Enrollment();
+        $enrollment->setStudent($student);
+        $enrollmentForm = $this->createForm(EnrollmentType::class, $enrollment);
+
         return $this->render('student/show.html.twig', [
             'student' => $student,
+            'enrollment_form' => $enrollmentForm->createView(),
         ]);
     }
 

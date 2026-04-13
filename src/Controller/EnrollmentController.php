@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/enrollment')]
@@ -53,12 +54,30 @@ class EnrollmentController extends AbstractController
             $entityManager->persist($enrollment);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf(
-                'Student "%s %s" has been enrolled in "%s" successfully!',
+                    // Build inline undo form (posts to enrollment_delete) with CSRF token
+                    $deleteUrl = $this->generateUrl('enrollment_delete', ['id' => $enrollment->getId()]);
+                    $token = $this->container->get('security.csrf.token_manager')->getToken('delete'.$enrollment->getId())->getValue();
+                    $undoForm = sprintf(
+                        '<form method="post" action="%s" class="undo-form d-inline" style="display:inline">\n<input type="hidden" name="_token" value="%s">\n<button type="submit" class="btn btn-sm btn-light">Undo</button>\n</form>',
+                        $deleteUrl,
+                        $token
+                    );
+
+            $viewUrl = $this->generateUrl('enrollment_show', ['id' => $enrollment->getId()]);
+            $message = sprintf(
+                'Student "%s %s" has been enrolled in "%s" successfully! %s <a href="%s" class="btn btn-sm btn-link">View</a>',
                 $enrollment->getStudent()->getFirstName(),
                 $enrollment->getStudent()->getLastName(),
-                $enrollment->getCourse()->getName()
-            ));
+                $enrollment->getCourse()->getName(),
+                $undoForm,
+                $viewUrl
+            );
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse(['status' => 'success', 'message' => $message, 'enrollmentId' => $enrollment->getId()]);
+            }
+
+            $this->addFlash('success', $message);
 
             return $this->redirectToRoute('enrollment_show', ['id' => $enrollment->getId()]);
         }
@@ -97,6 +116,8 @@ class EnrollmentController extends AbstractController
         ]);
     }
 
+    
+
     #[Route('/{id}', name: 'enrollment_delete', methods: ['POST'])]
     public function delete(Request $request, Enrollment $enrollment, EntityManagerInterface $entityManager): Response
     {
@@ -107,11 +128,17 @@ class EnrollmentController extends AbstractController
             $entityManager->remove($enrollment);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf(
+            $message = sprintf(
                 'Enrollment of "%s" in "%s" has been deleted successfully.',
                 $studentName,
                 $courseName
-            ));
+            );
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse(['status' => 'success', 'message' => $message]);
+            }
+
+            $this->addFlash('success', $message);
         }
 
         return $this->redirectToRoute('enrollment_index');

@@ -79,13 +79,18 @@
         </div>
     </nav>
 
-    {# Flash Messages #}
-    <div class="container mt-3">
+    {# Flash Messages rendered as Bootstrap toasts (non-blocking) #}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 1080;">
         {% for type, messages in app.flashes %}
             {% for message in messages %}
-                <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {% set visual = type == 'error' ? 'danger' : (type == 'success' ? 'success' : 'info') %}
+                <div class="toast align-items-center text-bg-{{ visual }} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ message|raw }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
                 </div>
             {% endfor %}
         {% endfor %}
@@ -113,5 +118,15 @@
     {% block javascripts %}
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     {% endblock %}
+    <script>
+        // Auto-show all toasts rendered server-side
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            toastElList.forEach(function(toastEl) {
+                var toast = new bootstrap.Toast(toastEl, { delay: 6000 });
+                toast.show();
+            });
+        });
+    </script>
 </body>
 </html>

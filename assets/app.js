@@ -124,3 +124,93 @@ function showToast(message, type = 'info') {
 
 // Export for use in inline scripts if needed
 window.showToast = showToast;
+
+// AJAX form handler (for .ajax-form) and undo handling for toast inline forms
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle AJAX forms
+    document.querySelectorAll('form.ajax-form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type=submit]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                const original = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            }
+
+            try {
+                const action = form.getAttribute('action') || window.location.href;
+                const options = {
+                    method: (form.getAttribute('method') || 'POST').toUpperCase(),
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: new FormData(form)
+                };
+
+                const resp = await fetch(action, options);
+                const data = await resp.json();
+                if (data.status === 'success') {
+                    // close any parent offcanvas
+                    const off = form.closest('.offcanvas');
+                    if (off) {
+                        const instance = bootstrap.Offcanvas.getInstance(off);
+                        if (instance) instance.hide();
+                    }
+                    // show server message as toast
+                    if (data.message) showToastHtml(data.message, 'success');
+                } else {
+                    const msg = data.message || 'An error occurred';
+                    showToastHtml(msg, 'danger');
+                }
+            } catch (err) {
+                showToastHtml('Network error', 'danger');
+                console.error(err);
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtn.getAttribute('data-original') || submitBtn.innerHTML;
+            }
+        });
+    });
+
+    // Delegate submit handling for undo forms inside toast container
+    const toastContainer = document.getElementById('toastContainer');
+    if (toastContainer) {
+        toastContainer.addEventListener('submit', async function(e) {
+            const form = e.target;
+            if (form && form.classList.contains('undo-form')) {
+                e.preventDefault();
+                try {
+                    const action = form.getAttribute('action');
+                    const resp = await fetch(action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: new FormData(form) });
+                    const data = await resp.json().catch(() => ({ status: 'ok' }));
+                    // Remove parent toast
+                    const toastEl = form.closest('.toast');
+                    if (toastEl) {
+                        const bs = bootstrap.Toast.getInstance(toastEl) || new bootstrap.Toast(toastEl);
+                        bs.hide();
+                    }
+                    showToastHtml('Action undone', 'info');
+                } catch (err) {
+                    showToastHtml('Unable to undo action', 'danger');
+                }
+            }
+        });
+    }
+
+    // Helper to inject toast HTML and display it using Bootstrap Toast
+    function showToastHtml(html, type='info') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const visual = type === 'danger' ? 'danger' : (type === 'success' ? 'success' : 'info');
+        const wrapper = document.createElement('div');
+        wrapper.className = `toast align-items-center text-bg-${visual} border-0 mb-2`;
+        wrapper.setAttribute('role','alert');
+        wrapper.setAttribute('aria-live','assertive');
+        wrapper.setAttribute('aria-atomic','true');
+        wrapper.innerHTML = `<div class="d-flex"><div class="toast-body">${html}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>`;
+        container.appendChild(wrapper);
+        const bsToast = new bootstrap.Toast(wrapper, { delay: 6000 });
+        bsToast.show();
+    }
+});

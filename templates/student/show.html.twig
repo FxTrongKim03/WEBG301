@@ -11,16 +11,19 @@
     </ol>
 </nav>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>
         <i class="bi bi-person-circle"></i> 
         {{ student.firstName }} {{ student.lastName }}
     </h1>
     <div>
-        <a href="{{ path('student_edit', {id: student.id}) }}" class="btn btn-warning">
+        <a href="#" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#enrollOffcanvas" aria-controls="enrollOffcanvas">
+            <i class="bi bi-journal-plus"></i> Enroll in Course
+        </a>
+        <a href="{{ path('student_edit', {id: student.id}) }}" class="btn btn-warning ms-2 d-none d-md-inline-block">
             <i class="bi bi-pencil"></i> Edit
         </a>
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <button type="button" class="btn btn-danger ms-2 d-none d-md-inline-block" data-bs-toggle="modal" data-bs-target="#deleteModal">
             <i class="bi bi-trash"></i> Delete
         </button>
     </div>
@@ -167,4 +170,46 @@
         </div>
     </div>
 </div>
+            {# Offcanvas slide-over for Enrollment form (loads embedded form passed from controller) #}
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="enrollOffcanvas" aria-labelledby="enrollOffcanvasLabel">
+                <div class="offcanvas-header">
+                    <h5 id="enrollOffcanvasLabel">Enroll {{ student.firstName }} {{ student.lastName }}</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    {% if enrollment_form is defined %}
+                        {{ form_start(enrollment_form, {'action': path('enrollment_new'), 'attr': {'class': 'ajax-form'}}) }}
+
+                        {# Ensure student id is submitted (hidden) so EnrollmentController receives it #}
+                        <input type="hidden" name="{{ enrollment_form.vars.name ~ '[student]' }}" value="{{ student.id }}">
+
+                        <div class="mb-3">
+                            {{ form_label(enrollment_form.course) }}
+                            {{ form_widget(enrollment_form.course, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(enrollment_form.course) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(enrollment_form.status) }}
+                            {{ form_widget(enrollment_form.status, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(enrollment_form.status) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(enrollment_form.grade) }}
+                            {{ form_widget(enrollment_form.grade, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(enrollment_form.grade) }}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="#" class="btn btn-secondary" data-bs-dismiss="offcanvas">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Enroll Student</button>
+                        </div>
+
+                        {{ form_end(enrollment_form) }}
+                    {% else %}
+                        <p class="text-muted">Enrollment form is not available.</p>
+                    {% endif %}
+                </div>
+            </div>
 {% endblock %}

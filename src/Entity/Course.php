@@ -32,7 +32,7 @@ class Course
 
     #[ORM\Column(type: 'integer', options: ['default' => 3])]
     #[Assert\NotBlank(message: 'Credits are required')]
-    #[Assert\Range(min: 1, max: 10, message: 'Credits must be a number between 1 and 10')]
+    #[Assert\Range(min: 1, max: 10, notInRangeMessage: 'Credits must be a number between {{ min }} and {{ max }}')]
     private int $credits = 3;
 
     #[ORM\ManyToOne(targetEntity: Department::class, inversedBy: 'courses')]
