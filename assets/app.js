@@ -213,4 +213,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const bsToast = new bootstrap.Toast(wrapper, { delay: 6000 });
         bsToast.show();
     }
+
+    // API UI removed: create/load/delete via API are disabled in the frontend for anonymous users.
 });

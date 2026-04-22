@@ -14,12 +14,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1><i class="bi bi-journal-check"></i> Enrollment Details</h1>
     <div>
-        <a href="{{ path('enrollment_edit', {id: enrollment.id}) }}" class="btn btn-warning">
-            <i class="bi bi-pencil"></i> Edit
-        </a>
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-            <i class="bi bi-trash"></i> Delete
-        </button>
+        {% if app.user %}
+            <a href="{{ path('enrollment_edit', {id: enrollment.id}) }}" class="btn btn-warning" title="Edit enrollment" data-bs-toggle="tooltip" aria-label="Edit enrollment">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete enrollment" aria-label="Delete enrollment">
+                <i class="bi bi-trash"></i> Delete
+            </button>
+        {% endif %}
     </div>
 </div>
 

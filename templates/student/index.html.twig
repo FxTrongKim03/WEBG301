@@ -5,9 +5,13 @@
 {% block body %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1><i class="bi bi-people-fill"></i> Students</h1>
-    <a href="{{ path('student_new') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Add New Student
-    </a>
+    <div>
+        {% if app.user %}
+            <a href="{{ path('student_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Student
+            </a>
+        {% endif %}
+    </div>
 </div>
 
 {% if students is empty %}
@@ -60,14 +64,16 @@
                             </td>
                             <td>
                                 <div class="btn-group d-none d-md-inline-flex" role="group">
-                                    <a href="{{ path('student_show', {id: student.id}) }}" 
-                                       class="btn btn-sm btn-outline-primary">
+                                                <a href="{{ path('student_show', {id: student.id}) }}" 
+                                                    class="btn btn-sm btn-primary" title="View student" data-bs-toggle="tooltip" aria-label="View student">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{{ path('student_edit', {id: student.id}) }}" 
-                                       class="btn btn-sm btn-outline-warning">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+                                    {% if app.user %}
+                                                     <a href="{{ path('student_edit', {id: student.id}) }}" 
+                                                         class="btn btn-sm btn-warning" title="Edit student" data-bs-toggle="tooltip" aria-label="Edit student">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -83,4 +89,6 @@
         <small>Showing {{ students|length }} students</small>
     </div>
 {% endif %}
+
+{# No API UI: DOM updates handled only for AJAX forms where appropriate #}
 {% endblock %}
