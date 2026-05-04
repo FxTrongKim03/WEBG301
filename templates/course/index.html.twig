@@ -12,6 +12,28 @@
     {% endif %}
 </div>
 
+{# Search & Filter Bar #}
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search by course name or code..." value="{{ search|default('') }}">
+                    {% if search %}
+                        <a href="{{ path('course_index') }}" class="btn btn-outline-secondary">Clear</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card shadow-sm">
     <div class="card-body">
         <div class="table-responsive">
@@ -29,23 +51,23 @@
                 <tbody>
                     {% for course in courses %}
                     <tr>
-                        <td><span class="badge bg-secondary">{{ course.id }}</span></td>
-                        <td><strong>{{ course.code }}</strong></td>
-                        <td>
+                        <td data-label="ID"><span class="badge bg-secondary">{{ course.id }}</span></td>
+                        <td data-label="Code"><strong>{{ course.code }}</strong></td>
+                        <td data-label="Name">
                             <a href="{{ path('course_show', {id: course.id}) }}" class="text-decoration-none">
                                 {{ course.name }}
                             </a>
                         </td>
-                        <td>{{ course.credits }}</td>
-                        <td>
+                        <td data-label="Credits">{{ course.credits }}</td>
+                        <td data-label="Department">
                             {% if course.department %}
                                 <span class="badge bg-success">{{ course.department.name }}</span>
                             {% else %}
                                 <span class="text-muted">N/A</span>
                             {% endif %}
                         </td>
-                        <td>
-                                <div class="btn-group d-none d-md-inline-flex" role="group">
+                        <td data-label="Actions">
+                                <div class="btn-group d-inline-flex d-lg-inline-flex" role="group">
                                     <a href="{{ path('course_show', {id: course.id}) }}" class="btn btn-sm btn-primary" title="View course" data-bs-toggle="tooltip" aria-label="View course">
                                         <i class="bi bi-eye"></i>
                                     </a>

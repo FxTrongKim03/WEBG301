@@ -20,12 +20,31 @@ class StudentController extends AbstractController
      * List all students
      */
     #[Route('s', name: 'student_index', methods: ['GET'])]
-    public function index(StudentRepository $studentRepository): Response
+    public function index(StudentRepository $studentRepository, Request $request): Response
     {
-        $students = $studentRepository->findAll();
+        $search = $request->query->get('search', '');
+        $departmentId = $request->query->get('department', '');
+
+        $query = $studentRepository->createQueryBuilder('s');
+
+        if ($search) {
+            $query->where('LOWER(s.firstName) LIKE LOWER(:search)')
+                  ->orWhere('LOWER(s.lastName) LIKE LOWER(:search)')
+                  ->orWhere('LOWER(s.email) LIKE LOWER(:search)')
+                  ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($departmentId) {
+            $query->andWhere('s.department = :departmentId')
+                  ->setParameter('departmentId', $departmentId);
+        }
+
+        $students = $query->getQuery()->getResult();
 
         return $this->render('student/index.html.twig', [
             'students' => $students,
+            'search' => $search,
+            'departmentId' => $departmentId,
         ]);
     }
 

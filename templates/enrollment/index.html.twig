@@ -12,6 +12,28 @@
     {% endif %}
 </div>
 
+{# Search & Filter Bar #}
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search by student or course..." value="{{ search|default('') }}">
+                    {% if search %}
+                        <a href="{{ path('enrollment_index') }}" class="btn btn-outline-secondary">Clear</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card shadow-sm">
     <div class="card-body">
         <div class="table-responsive">
@@ -29,10 +51,10 @@
                 <tbody>
                     {% for enrollment in enrollments %}
                     <tr>
-                        <td><span class="badge bg-secondary">{{ enrollment.id }}</span></td>
-                        <td>{{ enrollment.student.firstName }} {{ enrollment.student.lastName }}</td>
-                        <td>{{ enrollment.course.name }}</td>
-                        <td>
+                        <td data-label="ID"><span class="badge bg-secondary">{{ enrollment.id }}</span></td>
+                        <td data-label="Student">{{ enrollment.student.firstName }} {{ enrollment.student.lastName }}</td>
+                        <td data-label="Course">{{ enrollment.course.name }}</td>
+                        <td data-label="Status">
                             {% if enrollment.status == 'active' %}
                                 <span class="badge bg-primary">Active</span>
                             {% elseif enrollment.status == 'completed' %}
@@ -41,9 +63,9 @@
                                 <span class="badge bg-secondary">{{ enrollment.status }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ enrollment.grade|default('N/A') }}</td>
-                        <td>
-                            <div class="btn-group d-none d-md-inline-flex" role="group">
+                        <td data-label="Grade">{{ enrollment.grade|default('N/A') }}</td>
+                        <td data-label="Actions">
+                            <div class="btn-group d-inline-flex d-lg-inline-flex" role="group">
                                 <a href="{{ path('enrollment_show', {id: enrollment.id}) }}" class="btn btn-sm btn-primary" title="View enrollment" data-bs-toggle="tooltip" aria-label="View enrollment">
                                     <i class="bi bi-eye"></i>
                                 </a>

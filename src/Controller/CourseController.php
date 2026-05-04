@@ -15,10 +15,30 @@ use Symfony\Component\Routing\Annotation\Route;
 class CourseController extends AbstractController
 {
     #[Route('s', name: 'course_index', methods: ['GET'])]
-    public function index(CourseRepository $courseRepository): Response
+    public function index(CourseRepository $courseRepository, Request $request): Response
     {
+        $search = $request->query->get('search', '');
+        $departmentId = $request->query->get('department', '');
+
+        $query = $courseRepository->createQueryBuilder('c');
+
+        if ($search) {
+            $query->where('LOWER(c.name) LIKE LOWER(:search)')
+                  ->orWhere('LOWER(c.code) LIKE LOWER(:search)')
+                  ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($departmentId) {
+            $query->andWhere('c.department = :departmentId')
+                  ->setParameter('departmentId', $departmentId);
+        }
+
+        $courses = $query->getQuery()->getResult();
+
         return $this->render('course/index.html.twig', [
-            'courses' => $courseRepository->findAll(),
+            'courses' => $courses,
+            'search' => $search,
+            'departmentId' => $departmentId,
         ]);
     }
 

@@ -16,10 +16,26 @@ use Symfony\Component\Routing\Annotation\Route;
 class EnrollmentController extends AbstractController
 {
     #[Route('s', name: 'enrollment_index', methods: ['GET'])]
-    public function index(EnrollmentRepository $enrollmentRepository): Response
+    public function index(EnrollmentRepository $enrollmentRepository, Request $request): Response
     {
+        $search = $request->query->get('search', '');
+
+        $query = $enrollmentRepository->createQueryBuilder('e')
+            ->join('e.student', 's')
+            ->join('e.course', 'c');
+
+        if ($search) {
+            $query->where('LOWER(s.firstName) LIKE LOWER(:search)')
+                  ->orWhere('LOWER(s.lastName) LIKE LOWER(:search)')
+                  ->orWhere('LOWER(c.name) LIKE LOWER(:search)')
+                  ->setParameter('search', '%' . $search . '%');
+        }
+
+        $enrollments = $query->getQuery()->getResult();
+
         return $this->render('enrollment/index.html.twig', [
-            'enrollments' => $enrollmentRepository->findAll(),
+            'enrollments' => $enrollments,
+            'search' => $search,
         ]);
     }
 
