@@ -14,15 +14,15 @@
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-header bg-warning">
+        <div class="custom-card">
+            <div class="card-header card-header-success">
                 <h4 class="mb-0">
                     <i class="bi bi-pencil"></i> Edit Department
                 </h4>
             </div>
             <div class="card-body">
                 {{ form_start(form) }}
-                
+
                 <div class="mb-3">
                     {{ form_label(form.name) }}
                     {{ form_widget(form.name) }}
@@ -45,7 +45,7 @@
                     <a href="{{ path('department_show', {id: department.id}) }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Cancel
                     </a>
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit" class="btn btn-add-success">
                         <i class="bi bi-check-circle"></i> Update Department
                     </button>
                 </div>

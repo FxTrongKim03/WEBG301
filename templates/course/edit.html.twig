@@ -14,15 +14,15 @@
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-header bg-warning">
+        <div class="custom-card">
+            <div class="card-header card-header-warning">
                 <h4 class="mb-0">
                     <i class="bi bi-pencil"></i> Edit Course
                 </h4>
             </div>
             <div class="card-body">
                 {{ form_start(form) }}
-                
+
                 <div class="row">
                     <div class="col-md-8 mb-3">
                         {{ form_label(form.name) }}
@@ -59,7 +59,7 @@
                     <a href="{{ path('course_show', {id: course.id}) }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Cancel
                     </a>
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit" class="btn btn-add-warning">
                         <i class="bi bi-check-circle"></i> Update Course
                     </button>
                 </div>

@@ -14,14 +14,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>
         <i class="bi bi-book"></i> {{ course.name }}
-        <span class="badge bg-warning text-dark">{{ course.code }}</span>
+        <span class="module-badge module-badge-warning">{{ course.code }}</span>
     </h1>
     <div>
         {% if app.user %}
-            <a href="{{ path('course_edit', {id: course.id}) }}" class="btn btn-warning" title="Edit course" data-bs-toggle="tooltip" aria-label="Edit course">
+            <a href="{{ path('course_edit', {id: course.id}) }}" class="btn btn-edit" title="Edit course" data-bs-toggle="tooltip" aria-label="Edit course">
                 <i class="bi bi-pencil"></i> Edit
             </a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete course" aria-label="Delete course">
+            <button type="button" class="btn btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete course" aria-label="Delete course">
                 <i class="bi bi-trash"></i> Delete
             </button>
         {% endif %}
@@ -30,15 +30,15 @@
 
 <div class="row">
     <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-warning text-dark">
+        <div class="custom-card h-100">
+            <div class="card-header card-header-warning">
                 <h5 class="mb-0">Course Information</h5>
             </div>
             <div class="card-body">
                 <table class="table table-borderless">
                     <tr>
                         <td class="text-muted" style="width: 35%;"><strong>Course ID:</strong></td>
-                        <td><span class="badge bg-secondary">{{ course.id }}</span></td>
+                        <td><span class="module-badge module-badge-primary">{{ course.id }}</span></td>
                     </tr>
                     <tr>
                         <td class="text-muted"><strong>Name:</strong></td>
@@ -73,8 +73,8 @@
     </div>
 
     <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-info text-white">
+        <div class="custom-card h-100">
+            <div class="card-header card-header-info">
                 <h5 class="mb-0">Enrolled Students ({{ course.enrollments|length }})</h5>
             </div>
             <div class="card-body">
@@ -91,11 +91,11 @@
                                 </div>
                                 <div class="text-end">
                                     {% if enrollment.status == 'active' %}
-                                        <span class="badge bg-primary">Active</span>
+                                        <span class="module-badge module-badge-primary">Active</span>
                                     {% elseif enrollment.status == 'completed' %}
-                                        <span class="badge bg-success">Completed</span>
+                                        <span class="module-badge module-badge-success">Completed</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ enrollment.status }}</span>
+                                        <span class="module-badge module-badge-danger">{{ enrollment.status }}</span>
                                     {% endif %}
                                     <br>
                                     {% if enrollment.grade %}
@@ -121,7 +121,7 @@
             <div class="modal-body">
                 <p>Are you sure you want to delete the course <strong>{{ course.name }}</strong>?</p>
                 <p class="text-danger">
-                    <i class="bi bi-exclamation-triangle"></i> 
+                    <i class="bi bi-exclamation-triangle"></i>
                     This action cannot be undone. All enrollments related to this course will also be deleted!
                 </p>
             </div>
@@ -130,7 +130,7 @@
                 {# Form gọi phương thức Delete trong CourseController #}
                 <form method="post" action="{{ path('course_delete', {id: course.id}) }}" style="display: inline;">
                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ course.id) }}">
-                    <button type="submit" class="btn btn-danger">
+                    <button type="submit" class="btn btn-delete">
                         <i class="bi bi-trash"></i> Delete Course
                     </button>
                 </form>

@@ -14,8 +14,8 @@
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-header bg-info text-white">
+        <div class="custom-card">
+            <div class="card-header card-header-info">
                 <h4 class="mb-0">
                     <i class="bi bi-pencil"></i> Edit Enrollment
                 </h4>
@@ -27,7 +27,7 @@
                 </div>
 
                 {{ form_start(form) }}
-                
+
                 {# Hide student and course fields since they can't be changed #}
                 <div style="display: none;">
                     {{ form_widget(form.student) }}
@@ -51,7 +51,7 @@
                     <a href="{{ path('enrollment_show', {id: enrollment.id}) }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Cancel
                     </a>
-                    <button type="submit" class="btn btn-info">
+                    <button type="submit" class="btn btn-add-info">
                         <i class="bi bi-check-circle"></i> Update Enrollment
                     </button>
                 </div>
